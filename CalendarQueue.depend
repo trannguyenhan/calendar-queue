@@ -1,0 +1,28 @@
+# depslib dependency file v1.0
+1603690525 source:/media/trannguyenhan01092000/LEARN/CodeFolder/CalendarQueue/main.c
+	<stdio.h>
+	<stdlib.h>
+	"timing.c"
+
+1603690305 /media/trannguyenhan01092000/LEARN/CodeFolder/CalendarQueue/timing.c
+	"timing.h"
+
+1603690320 /media/trannguyenhan01092000/LEARN/CodeFolder/CalendarQueue/timing.h
+	<sys/time.h>
+	<sys/types.h>
+	<stdlib.h>
+	<stdio.h>
+	<sys/resource.h>
+
+1603791877 source:/media/trannguyenhan01092000/LEARN/meganz/CodeFolder/CalendarQueue/main.c
+	<stdio.h>
+	<stdlib.h>
+	"time.c"
+
+1603788602 /media/trannguyenhan01092000/LEARN/meganz/CodeFolder/CalendarQueue/time.c
+	<stdio.h>
+	<stdlib.h>
+	"Event.c"
+
+1603691364 /media/trannguyenhan01092000/LEARN/meganz/CodeFolder/CalendarQueue/Event.c
+
