@@ -130,23 +130,23 @@ void printBuckets(){
     printf("Count of event : %d",qsize);
 }
 
+void initQueue(){
+    localinit(8,0.5,14.5);
+}
+
 int main()
 {
-    localinit(8,0.5,14.5);
+    initQueue();
     enqueue(16.2);
-    enqueue(14.7);
-    enqueue(14.5);
-    enqueue(14.8);
-    enqueue(14.6);
-    enqueue(12.4);
     enqueue(16.6);
     enqueue(17.8);
+    enqueue(14.5);
+    enqueue(14.7);
+    enqueue(14.8);
     enqueue(15.2);
     enqueue(15.3);
     enqueue(19.1);
     enqueue(15.9);
-    dequeue();
-
     printBuckets();
     return 0;
 }
