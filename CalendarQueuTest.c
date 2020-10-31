@@ -11,7 +11,8 @@ int main()
     long count = 0;
     timing(&wc1, &cpuT);
     int currentTime = 0;
-    int endTime = 100*1000;
+    int endTime = 1000*1000;
+
 
     enqueue(0);
     node * ev = dequeue();
