@@ -9,5 +9,4 @@ enum TypesOfEvent
     F = 7, //LeavingSwitchEvent
     G = 4, //ReachingDestinationEvent
     H = 8 //NotificationEvent
-
 };

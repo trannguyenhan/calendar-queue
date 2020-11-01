@@ -11,11 +11,11 @@ int main()
     long count = 0;
     timing(&wc1, &cpuT);
     double currentTime = 0;
-    double endTime = 100*1000;
+    double endTime = 1005*1000;
 
     for(i = 0; i < 6750; i++)
     {
-        enqueue(new_node(A, i, 0, 0.0));
+        enqueue(new_node(A, i, 0, 0));
     }
 
 
@@ -31,7 +31,7 @@ int main()
             i = ev->idElementInGroup;//Lay id cua host trong danh sach cac hosts
             if(ev->type == A)
             {
-                enqueue(new_node(A, i, 0, currentTime + 10000));
+                enqueue(new_node(A, i, 0, currentTime + 10));
                 enqueue(new_node(B, i, 0, currentTime));
             }
             else if(ev->type == B)
