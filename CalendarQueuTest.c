@@ -10,13 +10,17 @@ int main()
     int i = 0;
     long count = 0;
     timing(&wc1, &cpuT);
-    int currentTime = 0;
-    int endTime = 1000*1000;
+    double currentTime = 0;
+    double endTime = 100*1000;
+
+    for(i = 0; i < 6750; i++)
+    {
+        enqueue(new_node(A, i, 0, 0.0));
+    }
 
 
-    enqueue(0);
     node * ev = dequeue();
-    while(currentTime <= endTime && ev->endTime != -1)
+    while(currentTime <= endTime && ev->endTime != -1.0)
     {
         if(ev->endTime == currentTime)
         {
@@ -24,8 +28,17 @@ int main()
             /*printf("%d)Event type = %d at %d with endTime = %d\n"
                 , count, ev->type, ev->idElementInGroup, ev->endTime
                     );*/
-            enqueue(currentTime+2);
-            ev->endTime = -1;
+            i = ev->idElementInGroup;//Lay id cua host trong danh sach cac hosts
+            if(ev->type == A)
+            {
+                enqueue(new_node(A, i, 0, currentTime + 10000));
+                enqueue(new_node(B, i, 0, currentTime));
+            }
+            else if(ev->type == B)
+            {
+                enqueue(new_node(C, i, 0, currentTime));
+            }
+            ev->endTime = -1.0;
             ev = dequeue();
 
             currentTime = ev->endTime;
