@@ -16,7 +16,7 @@ double buckettop;
 int bot_threshold;
 int top_threshold;
 
-void enqueue(node* entry){
+void insert(node* entry){
     double priority = entry->endTime;
 
     // i la vi tri bucket ma entry chen vao
@@ -39,14 +39,13 @@ void enqueue(node* entry){
         current->next = entry;
     }
 
+    // cap nhat qsize : so event cua hang doi
     qsize++;
 
-    /*nhan doi so luong cua calendar neu can*/
-    //if(qsize>top_threshold) resize(2*nbuckets);
     return;
 }
 
-node* dequeue(){
+node* removeFirst(){
     int i;
     if(qsize == 0) return NULL;
 
@@ -60,9 +59,6 @@ node* dequeue(){
             lastprio = tmp->endTime;
             qsize--;
 
-            /*thu hep so luong cua calendar neu can*/
-            //if(qsize < bot_threshold) resize(nbuckets/2);
-
             return tmp;
         } else {
             i++; if(i==nbuckets) i=0;
@@ -72,7 +68,6 @@ node* dequeue(){
     }
 
     // Neu khong tim thay quay lai tim cac min cua cac buckets
-    //printf("hello");
     int minbucket;
     double minpri;
     int start;
@@ -101,6 +96,7 @@ node* dequeue(){
     int n = lastprio / width;
     buckettop = (n+1) * width + 0.5*width;
     qsize--;
+
     return foo;
 }
 
@@ -124,13 +120,13 @@ double newwidth(){
     resizeenable = 0;
     node* save = (node*) calloc(nsamples,sizeof(node));
     for(int i=0; i<nsamples; i++){
-        node* tmp = dequeue();
+        node* tmp = removeFirst();
         save[i] = *tmp;
     }
     resizeenable = 1;
 
     for(int i=0; i<nsamples; i++){
-        enqueue(&save[i]);
+        insert(&save[i]);
     }
     lastprio = oldlastprio;
     lastbucket = oldlastbucket;
@@ -155,14 +151,12 @@ void resize(int newsize){
     int i;
     int oldnbuckets;
     node** oldbuckets;
-    int oldqsize;
 
     if(!resizeenable) return;
 
     bwidth = newwidth();
     oldbuckets = buckets;
     oldnbuckets = nbuckets;
-    oldqsize = qsize;
 
     if(firstsub == 0){
         localInit(QSPACE-newsize,newsize,bwidth,lastprio);
@@ -170,26 +164,16 @@ void resize(int newsize){
         localInit(0,newsize,bwidth,lastprio);
     }
 
-    /*
+    // them lai cac phan tu vao calendar moi
     for(int i=0; i<oldnbuckets; i++){
-        if(oldbuckets[i] == NULL) continue;
+        node* foo = oldbuckets[i];
+        while(foo!=NULL){ // tranh vien lap vo han
+            node* tmp = new_node(foo->type,foo->idElementInGroup,foo->portID,foo->endTime);
+            insert(tmp);
+            foo = foo->next;
+        }
+    }
 
-        node* tmp = oldbuckets[i];
-        while(tmp != NULL){
-            printf("%.1f ",tmp->endTime);
-            enqueue(tmp);
-            tmp = tmp->next;
-        }
-    }
-    */
-    for(int i=0; i<oldnbuckets; i++){
-        node* tmp = oldbuckets[i];
-        while(tmp!=NULL){
-            printf("%.1f \n",tmp->endTime);
-            //enqueue(tmp);
-            tmp = tmp->next;
-        }
-    }
     return;
 }
 
@@ -218,8 +202,25 @@ void localInit(int qbase, int nbuck, double bwidth, double startprio){
 
 void initqueue(){
     a = (node*) calloc(QSPACE,sizeof(node));
-    localInit(0,4,1.0,0.0);
+    localInit(0,2,1,0.0);
     resizeenable = 1;
+}
+
+// enqueue
+void enqueue(node* entry){
+    insert(entry);
+
+    // nhan doi so luong calendar neu can
+    if(qsize>top_threshold) resize(2*nbuckets);
+}
+
+// dequeue
+node* dequeue(){
+    node* tmp = removeFirst();
+
+    /*thu hep so luong cua calendar neu can*/
+    if(qsize < bot_threshold) resize(nbuckets/2);
+    return tmp;
 }
 
 /*in ra man hinh lich*/
@@ -238,20 +239,30 @@ void printBuckets(){
         printf("\n");
     }
     printf("\nCount of event : %d\n",qsize);
+    printf("so luong bucket : %d\n",nbuckets);
     printf("buckettop : %.1f\n",buckettop);
     printf("lastbuckket : %d\n",lastbucket);
     printf("lastprio : %.1f\n",lastprio);
+    printf("width : %.1f\n",width);
+    printf("bot : %.1d\n",bot_threshold);
+    printf("top : %.1d",top_threshold);
 }
-
+/*
 int main(){
     initqueue();
+
     enqueue(new_node(A,0,0,16));
     enqueue(new_node(A,0,0,14.5));
     enqueue(new_node(A,0,0,14.7));
     enqueue(new_node(A,0,0,14.8));
     enqueue(new_node(A,0,0,15.7));
     enqueue(new_node(A,0,0,13.7));
-    resize(nbuckets/2);
+    enqueue(new_node(A,0,0,16.7));
+    enqueue(new_node(A,0,0,10.7));
+    enqueue(new_node(A,0,0,20.7));
+    //if(qsize>top_threshold) resize(2*nbuckets);
+    //enqueue(new_node(A,0,0,13.7));
+    //resize(nbuckets*2);
     //printf("%.1f \n",newwidth());
     //printf("%.1f \n",dequeue()->endTime);
     //printf("%.1f \n",dequeue()->endTime);
@@ -261,3 +272,4 @@ int main(){
     //printf("%.1f \n",dequeue()->endTime);
     printBuckets();
 }
+*/
