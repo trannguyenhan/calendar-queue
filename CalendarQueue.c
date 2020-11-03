@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "time.c"
 const int QSPACE = 15000;
 
@@ -37,6 +38,11 @@ void insert(node* entry){
 
         entry->next = current->next;
         current->next = entry;
+    }
+
+    if(priority < lastprio){
+        int n = priority / width;
+        buckettop = (n+1)*width + 0.5*width;
     }
 
     // cap nhat qsize : so event cua hang doi
@@ -138,12 +144,12 @@ double newwidth(){
     int cur = 0;
     int next = cur + 1;
     while(next != end){
-        totalSeparation += save[next].endTime - save[cur].endTime;
+        totalSeparation += abs(save[next].endTime - save[cur].endTime);
         cur++;
         next++;
     }
-    totalSeparation *= 3;
-    return totalSeparation;
+    totalSeparation = totalSeparation/nsamples;
+    return totalSeparation*3;
 }
 
 void resize(int newsize){
@@ -252,14 +258,19 @@ int main(){
     initqueue();
 
     enqueue(new_node(A,0,0,16));
-    enqueue(new_node(A,0,0,14.5));
-    enqueue(new_node(A,0,0,14.7));
-    enqueue(new_node(A,0,0,14.8));
-    enqueue(new_node(A,0,0,15.7));
+    enqueue(new_node(A,0,0,16.2));
+    enqueue(new_node(A,0,0,17));
+    printf("%.1f \n",dequeue()->endTime);
     enqueue(new_node(A,0,0,13.7));
-    enqueue(new_node(A,0,0,16.7));
-    enqueue(new_node(A,0,0,10.7));
-    enqueue(new_node(A,0,0,20.7));
+    printf("%.1f \n",dequeue()->endTime);
+    //enqueue(new_node(A,0,0,14.5));
+    //enqueue(new_node(A,0,0,14.7));
+    //enqueue(new_node(A,0,0,14.8));
+    //enqueue(new_node(A,0,0,15.7));
+    //enqueue(new_node(A,0,0,13.7));
+    //enqueue(new_node(A,0,0,16.7));
+    //enqueue(new_node(A,0,0,10.7));
+    //enqueue(new_node(A,0,0,20.7));
     //if(qsize>top_threshold) resize(2*nbuckets);
     //enqueue(new_node(A,0,0,13.7));
     //resize(nbuckets*2);
