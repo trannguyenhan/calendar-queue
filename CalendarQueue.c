@@ -144,12 +144,28 @@ double newwidth(){
     int cur = 0;
     int next = cur + 1;
     while(next != end){
-        totalSeparation += abs(save[next].endTime - save[cur].endTime);
+        totalSeparation += save[next].endTime - save[cur].endTime;
         cur++;
         next++;
     }
-    totalSeparation = totalSeparation/nsamples;
-    return totalSeparation*3;
+    int twiceAvg = totalSeparation / (nsamples - 1) * 2;
+    totalSeparation = 0;
+    end = nsamples;
+    cur = 0;
+    next = cur + 1;
+    while(next != end){
+        int diff = save[next].endTime - save[cur].endTime;
+        if(diff <= twiceAvg){
+            totalSeparation += diff;
+        }
+        cur++;
+        next++;
+    }
+
+    //printf(" before division total seperation = %lf ", totalSeparation);
+    totalSeparation = totalSeparation*3;
+    //printf("%.1f as nsamples = %d\n", width, nsamples);
+    return totalSeparation;
 }
 
 void resize(int newsize){
@@ -260,10 +276,10 @@ int main(){
     enqueue(new_node(A,0,0,16));
     enqueue(new_node(A,0,0,16.2));
     enqueue(new_node(A,0,0,17));
-    printf("%.1f \n",dequeue()->endTime);
+    //printf("%.1f \n",dequeue()->endTime);
     enqueue(new_node(A,0,0,13.7));
-    printf("%.1f \n",dequeue()->endTime);
-    //enqueue(new_node(A,0,0,14.5));
+    //printf("%.1f \n",dequeue()->endTime);
+    enqueue(new_node(A,0,0,14.5));
     //enqueue(new_node(A,0,0,14.7));
     //enqueue(new_node(A,0,0,14.8));
     //enqueue(new_node(A,0,0,15.7));
