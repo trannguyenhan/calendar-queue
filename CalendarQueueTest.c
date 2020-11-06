@@ -11,7 +11,7 @@ int main()
     long count = 0;
     timing(&wc1, &cpuT);
     double currentTime = 0;
-    double endTime = 1000*100;
+    double endTime = 100*100;
 
     for(i = 0; i < 6750; i++)
     {
