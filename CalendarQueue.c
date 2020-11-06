@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include "time.c"
-const int QSPACE = 15000;
 
 node** a;
 node** buckets;
@@ -179,11 +178,7 @@ void resize(int newsize){
     oldbuckets = buckets;
     oldnbuckets = nbuckets;
 
-    if(firstsub == 0){
-        localInit(QSPACE-newsize,newsize,bwidth,lastprio);
-    } else {
-        localInit(0,newsize,bwidth,lastprio);
-    }
+    localInit(newsize,bwidth,lastprio);
 
     // them lai cac phan tu vao calendar moi
     for(int i=0; i<oldnbuckets; i++){
@@ -198,13 +193,12 @@ void resize(int newsize){
     return;
 }
 
-void localInit(int qbase, int nbuck, double bwidth, double startprio){
+void localInit(int nbuck, double bwidth, double startprio){
     int i;
     long int n;
 
     // khoi tao cac tham so
-    firstsub = qbase;
-    buckets = &a[qbase];
+    buckets = (node*) calloc(nbuck,sizeof(node));
     width = bwidth;
     nbuckets = nbuck;
 
@@ -226,8 +220,7 @@ void localInit(int qbase, int nbuck, double bwidth, double startprio){
 }
 
 void initqueue(){
-    a = (node*) calloc(QSPACE,sizeof(node));
-    localInit(0,2,1,0.0);
+    localInit(2,1,0.0);
     resizeenable = 1;
 }
 
