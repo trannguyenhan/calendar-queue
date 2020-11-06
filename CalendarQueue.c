@@ -6,7 +6,7 @@ const int QSPACE = 15000;
 
 node** a;
 node** buckets;
-int width;
+double width;
 int nbuckets;
 int firstsub;
 int resizeenable;
@@ -162,9 +162,8 @@ double newwidth(){
         next++;
     }
 
-    //printf(" before division total seperation = %lf ", totalSeparation);
-    totalSeparation = totalSeparation*3;
-    //printf("%.1f as nsamples = %d\n", width, nsamples);
+    totalSeparation *= 3;
+    totalSeparation = totalSeparation==0? 1.0 : totalSeparation;
     return totalSeparation;
 }
 
@@ -203,21 +202,25 @@ void localInit(int qbase, int nbuck, double bwidth, double startprio){
     int i;
     long int n;
 
+    // khoi tao cac tham so
     firstsub = qbase;
     buckets = &a[qbase];
     width = bwidth;
     nbuckets = nbuck;
 
+    // khoi tao cac bucket
     qsize = 0;
     for(int i=0; i<nbuckets; i++){
         buckets[i] = NULL;
     }
 
+    // khoi tao cac chi so ban dau cua bucket dau tien
     lastprio = startprio;
     n = startprio / width;
     lastbucket = n % nbuckets;
     buckettop = (n+1)*width + 0.5*width;
 
+    // khoi tao 2 linh canh dau vao cuoi
     bot_threshold = nbuckets/2 - 2;
     top_threshold = 2*nbuckets;
 }
