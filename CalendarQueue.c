@@ -1,7 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "time.c"
+#include "node.c"
+
+void insert(node* entry);
+node* removeFirst();
+double newwidth();
+void resize(int newsize);
+void localInit(int nbuck, double bwidth, double startprio);
+void initqueue();
+void enqueue(node* entry);
+node* dequeue();
+void printBucket(node* n);
+void printBuckets();
 
 node** a;
 node** buckets;
@@ -24,6 +35,7 @@ void insert(node* entry){
     i = priority / width;
     i = i % nbuckets;
 
+    // tren i vao vi tri hop li tren buckets[i]
     if(buckets[i] == NULL || buckets[i]->endTime >= priority){
         entry->next = buckets[i];
         buckets[i] = entry;
@@ -72,11 +84,14 @@ node* removeFirst(){
         }
     }
 
-    // Neu khong tim thay quay lai tim cac min cua cac buckets
+    // neu khong tim thay gia tri nho nhat trong nam
+    // quay lai tim gia tri nho nhat trong tat ca cac gia tri dau cua buckets
     int minbucket;
     double minpri;
+
+    // start : vi tri dau tien buckets[i] != NULL
     int start;
-    for(start=0; start<nbuckets; start++) // gan gia tri cho start
+    for(start=0; start<nbuckets; start++)
         if(buckets[start] != NULL){
             lastbucket = i;
             lastprio = buckets[i]->endTime;
@@ -85,6 +100,7 @@ node* removeFirst(){
             break;
         }
 
+    // tim vi tri buckets[i] != NULL ma nho nhat
     for(int i = start+1; i<nbuckets; i++)
         if(buckets[i] != NULL){
             if(buckets[i]->endTime < minpri){
@@ -122,6 +138,7 @@ double newwidth(){
 
 
     // lay ra nsamples gia tri mau
+    // luc lay ra mau ngan chan viec resize, resizeenable = false
     resizeenable = 0;
     node* save = (node*) calloc(nsamples,sizeof(node));
     for(int i=0; i<nsamples; i++){
@@ -130,6 +147,7 @@ double newwidth(){
     }
     resizeenable = 1;
 
+    //  tra lai cac gia tri da lay ra trong hang doi
     for(int i=0; i<nsamples; i++){
         insert(&save[i]);
     }
@@ -137,7 +155,7 @@ double newwidth(){
     lastbucket = oldlastbucket;
     buckettop = oldbuckkettop;
 
-    // tinh toan gia tri cho width
+    // tinh toan gia tri cho new witdh
     double totalSeparation = 0;
     int end = nsamples;
     int cur = 0;
@@ -147,22 +165,26 @@ double newwidth(){
         cur++;
         next++;
     }
-    int twiceAvg = totalSeparation / (nsamples - 1) * 2;
+    double twiceAvg = totalSeparation / (nsamples - 1) * 2;
+
     totalSeparation = 0;
     end = nsamples;
     cur = 0;
     next = cur + 1;
     while(next != end){
-        int diff = save[next].endTime - save[cur].endTime;
+        double diff = save[next].endTime - save[cur].endTime;
         if(diff <= twiceAvg){
             totalSeparation += diff;
         }
         cur++;
         next++;
     }
+    //printf("%.1f\n",totalSeparation);
 
+    // gia tri width moi = 3 lan do phan tach gia tri trung binh
     totalSeparation *= 3;
-    totalSeparation = totalSeparation<=0? 1.0 : totalSeparation;
+    totalSeparation = totalSeparation<1.0? 1.0 : totalSeparation;
+
     return totalSeparation;
 }
 
@@ -198,7 +220,8 @@ void localInit(int nbuck, double bwidth, double startprio){
     long int n;
 
     // khoi tao cac tham so
-    buckets = (node*) calloc(nbuck,sizeof(node));
+    buckets = (node**) calloc(nbuck,sizeof(node));
+    //buckets = malloc(sizeof * buckets * nbuckets);
     width = bwidth;
     nbuckets = nbuck;
 
@@ -227,7 +250,7 @@ void initqueue(){
 // enqueue
 void enqueue(node* entry){
     insert(entry);
-
+    //printf("%.1f\n",width);
     // nhan doi so luong calendar neu can
     if(qsize>top_threshold) resize(2*nbuckets);
 }
@@ -265,23 +288,63 @@ void printBuckets(){
     printf("bot : %.1d\n",bot_threshold);
     printf("top : %.1d",top_threshold);
 }
+
 /*
 int main(){
     initqueue();
+    long count = 0;
+    double currentTime = 0;
+    double endTime = 1000*1000;
 
-    enqueue(new_node(A,0,0,16));
-    enqueue(new_node(A,0,0,16.2));
-    enqueue(new_node(A,0,0,17));
-    printf("%.1f \n",dequeue()->endTime);
-    enqueue(new_node(A,0,0,13.7));
-    printf("%.1f \n",dequeue()->endTime);
-    enqueue(new_node(A,0,0,14.5));
-    enqueue(new_node(A,0,0,14.7));
-    enqueue(new_node(A,0,0,14.8));
-    enqueue(new_node(A,0,0,15.7));
-    enqueue(new_node(A,0,0,13.7));
-    enqueue(new_node(A,0,0,16.7));
-    enqueue(new_node(A,0,0,10.7));
+    int i;
+    for(i = 0; i < 6750; i++)
+    {
+        enqueue(new_node(A, i, 0, i));
+    }
+
+
+    node * ev = dequeue();
+    while(currentTime <= endTime && ev->endTime != -1)
+    {   //printf("hello world");
+        //printBuckets();
+        if(ev->endTime == currentTime)
+        {
+            count++;
+            i = ev->idElementInGroup;//Lay id cua host trong danh sach cac hosts
+            if(ev->type == A)
+            {
+                enqueue(new_node(A, i, 0, currentTime + 10000));
+                //printf("%.1f\n",currentTime);
+                //printf("width : %.1f\n",width);
+                enqueue(new_node(B, i, 0, currentTime));
+            }
+            else if(ev->type == B)
+            {
+                enqueue(new_node(C, i, 0, currentTime));
+            }
+            ev->endTime = -1;
+            ev = dequeue();
+
+            currentTime = ev->endTime;
+        }
+    }
+
+    printf("count = %ld\n", count);
+    printf("================================\n");
+
+    //enqueue(new_node(A,0,0,16));
+    //enqueue(new_node(A,0,0,16.2));
+    //enqueue(new_node(A,0,0,17));
+    //printf("%.1f \n",dequeue()->endTime);
+    //enqueue(new_node(A,0,0,13.7));
+    //printf("%.1f \n",dequeue()->endTime);
+    //enqueue(new_node(A,0,0,14.5));
+    //enqueue(new_node(A,0,0,14.7));
+    //enqueue(new_node(A,0,0,14.8));
+    //enqueue(new_node(A,0,0,15.7));
+    //enqueue(new_node(A,0,0,13.7));
+    //enqueue(new_node(A,0,0,16.7));
+    //enqueue(new_node(A,0,0,10.7));
     //enqueue(new_node(A,0,0,20.7));
     //if(qsize>top_threshold) resize(2*nbuckets);
     //enqueue(new_node(A,0,0,13.7));
@@ -293,6 +356,6 @@ int main(){
     //printf("%.1f \n",dequeue()->endTime);
     //printf("%.1f \n",dequeue()->endTime);
     //printf("%.1f \n",dequeue()->endTime);
-    printBuckets();
+    //printBuckets();
 }
 */
