@@ -93,10 +93,10 @@ node* removeFirst(){
     int start;
     for(start=0; start<nbuckets; start++)
         if(buckets[start] != NULL){
-            lastbucket = i;
-            lastprio = buckets[i]->endTime;
-            minpri = buckets[i]->endTime;
-            minbucket = i;
+            lastbucket = start;
+            lastprio = buckets[start]->endTime;
+            minpri = buckets[start]->endTime;
+            minbucket = start;
             break;
         }
 
