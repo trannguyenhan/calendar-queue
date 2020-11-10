@@ -1,8 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "time.c"
+#include "node.c"
 const int QSPACE = 15000;
+
+void insert(node* entry);
+node* removeFirst();
+double newwidth();
+void resize(int newsize);
+void localInit(int qbase, int nbuck, double bwidth, double startprio);
+void initqueue();
+void enqueue(node* entry);
+node* dequeue();
+void printBucket(node* n);
+void printBuckets();
 
 node** a;
 node** buckets;
@@ -79,10 +90,10 @@ node* removeFirst(){
     int start;
     for(start=0; start<nbuckets; start++) // gan gia tri cho start
         if(buckets[start] != NULL){
-            lastbucket = i;
-            lastprio = buckets[i]->endTime;
-            minpri = buckets[i]->endTime;
-            minbucket = i;
+            lastbucket = start;
+            lastprio = buckets[start]->endTime;
+            minpri = buckets[start]->endTime;
+            minbucket = start;
             break;
         }
 
@@ -148,13 +159,13 @@ double newwidth(){
         cur++;
         next++;
     }
-    int twiceAvg = totalSeparation / (nsamples - 1) * 2;
+    double twiceAvg = totalSeparation / (nsamples - 1) * 2;
     totalSeparation = 0;
     end = nsamples;
     cur = 0;
     next = cur + 1;
     while(next != end){
-        int diff = save[next].endTime - save[cur].endTime;
+        double diff = save[next].endTime - save[cur].endTime;
         if(diff <= twiceAvg){
             totalSeparation += diff;
         }
