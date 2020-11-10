@@ -31,7 +31,7 @@ int main()
             i = ev->idElementInGroup;//Lay id cua host trong danh sach cac hosts
             if(ev->type == A)
             {
-                enqueue(new_node(A, i, 0, currentTime + 100));
+                enqueue(new_node(A, i, 0, currentTime + 10000));
                 enqueue(new_node(B, i, 0, currentTime));
             }
             else if(ev->type == B)
