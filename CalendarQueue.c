@@ -5,23 +5,22 @@
 
 typedef struct CalendarQueue {
     node** buckets;
-    double width;
-    int nbuckets;
-    int firstsub;
-    int resizeenable;
-    int qsize;
-    double lastprio;
-    int lastbucket;
-    double buckettop;
-    int bot_threshold;
-    int top_threshold;
+    long int width;
+    long int nbuckets;
+    long int resizeenable;
+    long int qsize;
+    long int lastprio;
+    long int lastbucket;
+    long int buckettop;
+    long int bot_threshold;
+    long int top_threshold;
 } CalendarQueue;
 
 void insert(CalendarQueue* q, node* entry);
 node* removeFirst(CalendarQueue* q);
 double newwidth(CalendarQueue* q);
-void resize(CalendarQueue* q, int newsize);
-void localInit(CalendarQueue* q, int nbuck, double bwidth, double startprio);
+void resize(CalendarQueue* q, long int newsize);
+void localInit(CalendarQueue* q, long int nbuck, long int bwidth, long int startprio);
 CalendarQueue* initqueue();
 void enqueue(CalendarQueue* q, node* entry);
 node* dequeue(CalendarQueue* q);
@@ -30,10 +29,10 @@ void printBuckets(CalendarQueue* q);
 
 
 void insert(CalendarQueue* q, node* entry){
-    double priority = entry->endTime;
+    long int priority = entry->endTime;
 
     // i la vi tri bucket ma entry chen vao
-    int i;
+    long int i;
     i = priority / q->width;
     i = i % q->nbuckets;
 
@@ -54,7 +53,7 @@ void insert(CalendarQueue* q, node* entry){
     }
 
     if(priority < q->lastprio){
-        int n = priority / q->width;
+        long int n = priority / q->width;
         q->buckettop = (n+1)*q->width /*+ 0.5*q->width*/;
     }
 
@@ -65,7 +64,7 @@ void insert(CalendarQueue* q, node* entry){
 }
 
 node* removeFirst(CalendarQueue* q){
-    int i;
+    long int i;
     if(q->qsize == 0) return NULL;
 
     i = q->lastbucket;
@@ -88,11 +87,11 @@ node* removeFirst(CalendarQueue* q){
 
     // neu khong tim thay gia tri nho nhat trong nam
     // quay lai tim gia tri nho nhat trong tat ca cac gia tri dau cua buckets
-    int minbucket;
+    long int minbucket;
     double minpri;
 
     // start : vi tri dau tien buckets[i] != NULL
-    int start;
+    long int start;
     for(start=0; start<q->nbuckets; start++)
         if(q->buckets[start] != NULL){
             q->lastbucket = start;
@@ -103,7 +102,7 @@ node* removeFirst(CalendarQueue* q){
         }
 
     // tim vi tri buckets[i] != NULL ma nho nhat
-    for(int i = start+1; i<q->nbuckets; i++)
+    for(long int i = start+1; i<q->nbuckets; i++)
         if(q->buckets[i] != NULL){
             if(q->buckets[i]->endTime < minpri){
                 q->lastbucket = i;
@@ -116,7 +115,7 @@ node* removeFirst(CalendarQueue* q){
     node* foo = q->buckets[minbucket];
     q->buckets[minbucket] = foo->next;
 
-    int n = q->lastprio / q->width;
+    long int n = q->lastprio / q->width;
     q->buckettop = (n+1) * q->width /*+ 0.5*q->width*/;
     q->qsize--;
 
@@ -134,23 +133,23 @@ double newwidth(CalendarQueue* q){
 
     if(nsamples > 25) nsamples = 25;
 
-    double oldlastprio = q->lastprio;
-    int oldlastbucket = q->lastbucket;
-    double oldbuckkettop = q->buckettop;
+    long int oldlastprio = q->lastprio;
+    long int oldlastbucket = q->lastbucket;
+    long int oldbuckkettop = q->buckettop;
 
 
     // lay ra nsamples gia tri mau
     // luc lay ra mau ngan chan viec resize, resizeenable = false
     q->resizeenable = 0;
     node* save = (node*) calloc(nsamples,sizeof(node));
-    for(int i=0; i<nsamples; i++){
+    for(long int i=0; i<nsamples; i++){
         node* tmp = removeFirst(q);
         save[i] = *tmp;
     }
     q->resizeenable = 1;
 
     //  tra lai cac gia tri da lay ra trong hang doi
-    for(int i=0; i<nsamples; i++){
+    for(long int i=0; i<nsamples; i++){
         insert(q,&save[i]);
     }
     q->lastprio = oldlastprio;
@@ -158,23 +157,23 @@ double newwidth(CalendarQueue* q){
     q->buckettop = oldbuckkettop;
 
     // tinh toan gia tri cho new witdh
-    double totalSeparation = 0;
-    int end = nsamples;
-    int cur = 0;
-    int next = cur + 1;
+    long int totalSeparation = 0;
+    long int end = nsamples;
+    long int cur = 0;
+    long int next = cur + 1;
     while(next != end){
         totalSeparation += save[next].endTime - save[cur].endTime;
         cur++;
         next++;
     }
-    double twiceAvg = totalSeparation / (nsamples - 1) * 2;
+    long int twiceAvg = totalSeparation / (nsamples - 1) * 2 + 1;
 
     totalSeparation = 0;
     end = nsamples;
     cur = 0;
     next = cur + 1;
     while(next != end){
-        double diff = save[next].endTime - save[cur].endTime;
+        long int diff = save[next].endTime - save[cur].endTime;
         if(diff <= twiceAvg){
             totalSeparation += diff;
         }
@@ -184,15 +183,15 @@ double newwidth(CalendarQueue* q){
 
     // gia tri width moi = 3 lan do phan tach gia tri trung binh
     totalSeparation *= 3;
-    totalSeparation = totalSeparation<1.0? 1.0 : totalSeparation;
+    totalSeparation = totalSeparation<1? 1 : totalSeparation;
 
     return totalSeparation;
 }
 
-void resize(CalendarQueue* q, int newsize){
-    double bwidth;
-    int i;
-    int oldnbuckets;
+void resize(CalendarQueue* q, long int newsize){
+    long int bwidth;
+    long int i;
+    long int oldnbuckets;
     node** oldbuckets;
 
     if(!q->resizeenable) return;
@@ -204,7 +203,7 @@ void resize(CalendarQueue* q, int newsize){
     localInit(q,newsize,bwidth,q->lastprio);
 
     // them lai cac phan tu vao calendar moi
-    for(int i=0; i<oldnbuckets; i++){
+    for(long int i=0; i<oldnbuckets; i++){
         node* foo = oldbuckets[i];
         while(foo!=NULL){ // tranh vien lap vo han
             node* tmp = new_node(foo->type,foo->idElementInGroup,foo->portID,foo->endTime);
@@ -213,11 +212,12 @@ void resize(CalendarQueue* q, int newsize){
         }
     }
 
+    free(oldbuckets);
     return;
 }
 
-void localInit(CalendarQueue* q, int nbuck, double bwidth, double startprio){
-    int i;
+void localInit(CalendarQueue* q, long int nbuck, long int bwidth, long int startprio){
+    long int i;
     long int n;
 
     // khoi tao cac tham so
@@ -228,7 +228,7 @@ void localInit(CalendarQueue* q, int nbuck, double bwidth, double startprio){
 
     // khoi tao cac bucket
     q->qsize = 0;
-    for(int i=0; i<q->nbuckets; i++){
+    for(long int i=0; i<q->nbuckets; i++){
         q->buckets[i] = NULL;
     }
 
@@ -236,7 +236,7 @@ void localInit(CalendarQueue* q, int nbuck, double bwidth, double startprio){
     q->lastprio = startprio;
     n = startprio / q->width;
     q->lastbucket = n % q->nbuckets;
-    q->buckettop = (n+1)*q->width + 0.5*q->width;
+    q->buckettop = (n+1)*q->width /*+ 0.5*q->width*/;
 
     // khoi tao 2 linh canh dau vao cuoi
     q->bot_threshold = q->nbuckets/2 - 2;
@@ -245,7 +245,7 @@ void localInit(CalendarQueue* q, int nbuck, double bwidth, double startprio){
 
 CalendarQueue* initqueue(){
     CalendarQueue* init_q = (CalendarQueue*)malloc(sizeof(CalendarQueue));
-    localInit(init_q,2,1,0.0);
+    localInit(init_q,2,1,0);
     init_q->resizeenable = 1;
     return init_q;
 }
@@ -270,13 +270,13 @@ node* dequeue(CalendarQueue* q){
 /*in ra man hinh lich*/
 void printBucket(node* n){
     while(n!=NULL){
-        printf("%.1f ",n->endTime);
+        printf("%.d ",n->endTime);
         n = n->next;
     }
     return;
 }
 void printBuckets(CalendarQueue* q){
-    for(int i=0; i<q->nbuckets; i++){
+    for(long int i=0; i<q->nbuckets; i++){
         printf("Day %d : ",i);
         node* tmp = q->buckets[i];
         printBucket(tmp);
@@ -284,37 +284,38 @@ void printBuckets(CalendarQueue* q){
     }
     printf("\nCount of event : %d\n",q->qsize);
     printf("so luong bucket : %d\n",q->nbuckets);
-    printf("buckettop : %.1f\n",q->buckettop);
+    printf("buckettop : %.d\n",q->buckettop);
     printf("lastbuckket : %d\n",q->lastbucket);
-    printf("lastprio : %.1f\n",q->lastprio);
-    printf("width : %.1f\n",q->width);
-    printf("bot : %.1d\n",q->bot_threshold);
-    printf("top : %.1d",q->top_threshold);
+    printf("lastprio : %d\n",q->lastprio);
+    printf("width : %d\n",q->width);
+    printf("bot : %d\n",q->bot_threshold);
+    printf("top : %d",q->top_threshold);
 }
 
 /*
 int main(){
     CalendarQueue* q = initqueue();
     enqueue(q,new_node(A,0,0,16));
-    enqueue(q,new_node(A,0,0,16.2));
+    enqueue(q,new_node(A,0,0,15));
     enqueue(q,new_node(A,0,0,17));
-    printf("%.1f \n",dequeue(q)->endTime);
-    enqueue(q,new_node(A,0,0,13.7));
-    printf("%.1f \n",dequeue(q)->endTime);
-    enqueue(q,new_node(A,0,0,14.5));
-    enqueue(q,new_node(A,0,0,14.7));
-    enqueue(q,new_node(A,0,0,14.8));
-    enqueue(q,new_node(A,0,0,15.7));
-    enqueue(q,new_node(A,0,0,13.7));
-    enqueue(q,new_node(A,0,0,16.7));
-    enqueue(q,new_node(A,0,0,10.7));
+    printf("%.d \n",dequeue(q)->endTime);
+    enqueue(q,new_node(A,0,0,13));
+    printf("%.d \n",dequeue(q)->endTime);
+    enqueue(q,new_node(A,0,0,12));
+    enqueue(q,new_node(A,0,0,18));
+    enqueue(q,new_node(A,0,0,20));
+    enqueue(q,new_node(A,0,0,25));
+    enqueue(q,new_node(A,0,0,34));
+    enqueue(q,new_node(A,0,0,10));
+    enqueue(q,new_node(A,0,0,19));
     //enqueue(new_node(A,0,0,20.7));
     //if(qsize>top_threshold) resize(2*nbuckets);
     //enqueue(new_node(A,0,0,13.7));
     //resize(nbuckets*2);
     //printf("%.1f \n",newwidth());
-    printf("%.1f \n",dequeue(q)->endTime);
-    //printf("%.1f \n",dequeue()->endTime);
+    printf("%d \n",dequeue(q)->endTime);
+    printf("%d \n",dequeue(q)->endTime);
+    enqueue(q,new_node(A,0,0,29));
     //printf("%.1f \n",dequeue()->endTime);
     //printf("%.1f \n",dequeue()->endTime);
     //printf("%.1f \n",dequeue()->endTime);

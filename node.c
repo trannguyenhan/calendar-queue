@@ -6,12 +6,12 @@ typedef struct node {
     enum TypesOfEvent type; //type of event
     int idElementInGroup;//id of element in group of hosts or switches
     int portID;
-    double endTime;
+    long int endTime;
     struct node* next;
     struct node* parent;
 } node;
 
-node* new_node(int type, int idElementInGroup, int portID, double priority){
+node* new_node(int type, int idElementInGroup, int portID,long int priority){
     node* tmp = malloc(sizeof(node));
     tmp->type = type;
     tmp->idElementInGroup = idElementInGroup;
