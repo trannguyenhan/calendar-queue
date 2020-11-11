@@ -236,7 +236,7 @@ void localInit(CalendarQueue* q, int nbuck, double bwidth, double startprio){
     q->lastprio = startprio;
     n = startprio / q->width;
     q->lastbucket = n % q->nbuckets;
-    q->buckettop = (n+1)*q->width + 0.5*q->width;
+    q->buckettop = (n+1)*q->width /*+ 0.5*q->width*/;
 
     // khoi tao 2 linh canh dau vao cuoi
     q->bot_threshold = q->nbuckets/2 - 2;
