@@ -182,7 +182,7 @@ double newwidth(CalendarQueue* q){
     }
 
     // gia tri width moi = 3 lan do phan tach gia tri trung binh
-    totalSeparation *= 3;
+    totalSeparation *= 4;
     totalSeparation = totalSeparation<1? 1 : totalSeparation;
 
     return totalSeparation;
@@ -270,7 +270,7 @@ node* dequeue(CalendarQueue* q){
 /*in ra man hinh lich*/
 void printBucket(node* n){
     while(n!=NULL){
-        printf("%.d ",n->endTime);
+        printf("%d ",n->endTime);
         n = n->next;
     }
     return;
