@@ -51,12 +51,13 @@ void insert(CalendarQueue* q, node* entry){
         entry->next = current->next;
         current->next = entry;
     }
-
+    /*
     if(priority < q->lastprio){
         long int n = priority / q->width;
-        q->buckettop = (n+1)*q->width /*+ 0.5*q->width*/;
+        q->buckettop = (n+1)*q->width + 0.5*q->width;
+        q->lastbucket = n % q->nbuckets;
     }
-
+    */
     // cap nhat qsize : so event cua hang doi
     q->qsize++;
 
@@ -115,8 +116,8 @@ node* removeFirst(CalendarQueue* q){
     node* foo = q->buckets[minbucket];
     q->buckets[minbucket] = foo->next;
 
-    long int n = q->lastprio / q->width;
-    q->buckettop = (n+1) * q->width /*+ 0.5*q->width*/;
+    long int n = (long int) (q->lastprio) / (q->width);
+    q->buckettop = (n+1) * (q->width) + (0.5*q->width);
     q->qsize--;
 
     return foo;
@@ -182,7 +183,7 @@ double newwidth(CalendarQueue* q){
     }
 
     // gia tri width moi = 3 lan do phan tach gia tri trung binh
-    totalSeparation *= 4;
+    totalSeparation *= 3;
     totalSeparation = totalSeparation<1? 1 : totalSeparation;
 
     return totalSeparation;
