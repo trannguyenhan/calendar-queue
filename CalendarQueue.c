@@ -18,7 +18,7 @@ typedef struct CalendarQueue {
 
 void insert(CalendarQueue* q, node* entry);
 node* removeFirst(CalendarQueue* q);
-double newwidth(CalendarQueue* q);
+long int newwidth(CalendarQueue* q);
 void resize(CalendarQueue* q, long int newsize);
 void localInit(CalendarQueue* q, long int nbuck, long int bwidth, long int startprio);
 CalendarQueue* initqueue();
@@ -51,13 +51,13 @@ void insert(CalendarQueue* q, node* entry){
         entry->next = current->next;
         current->next = entry;
     }
-    /*
+
     if(priority < q->lastprio){
         long int n = priority / q->width;
         q->buckettop = (n+1)*q->width + 0.5*q->width;
         q->lastbucket = n % q->nbuckets;
     }
-    */
+
     // cap nhat qsize : so event cua hang doi
     q->qsize++;
 
@@ -89,7 +89,7 @@ node* removeFirst(CalendarQueue* q){
     // neu khong tim thay gia tri nho nhat trong nam
     // quay lai tim gia tri nho nhat trong tat ca cac gia tri dau cua buckets
     long int minbucket;
-    double minpri;
+    long int minpri;
 
     // start : vi tri dau tien buckets[i] != NULL
     long int start;
@@ -117,13 +117,13 @@ node* removeFirst(CalendarQueue* q){
     q->buckets[minbucket] = foo->next;
 
     long int n = (long int) (q->lastprio) / (q->width);
-    q->buckettop = (n+1) * (q->width) + (0.5*q->width);
+    q->buckettop = (long int) (n+1) * (q->width) + (0.5*q->width);
     q->qsize--;
 
     return foo;
 }
 
-double newwidth(CalendarQueue* q){
+long int newwidth(CalendarQueue* q){
     int nsamples;
 
     if(q->qsize < 2) return 1.0;

@@ -51,11 +51,11 @@ int main()
             if(ev->type == A)
             {
                 enqueue(q,new_node(A, i, 0, currentTime + 10000));
-                enqueue(q,new_node(B, i, 0, currentTime + number[index]));
+                enqueue(q,new_node(B, i, 0, currentTime /*+ number[index]*/));
             }
             else if(ev->type == B)
             {
-                enqueue(q,new_node(C, i, 0, currentTime + number[index]));
+                enqueue(q,new_node(C, i, 0, currentTime /*+ number[index]*/));
             }
             ev->endTime = -1;
             ev = dequeue(q);
