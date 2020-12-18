@@ -53,11 +53,14 @@ void insert(CalendarQueue* q, node* entry){
         current->next = entry;
     }
 
+    /* Truong hop chen vao phan tu bat ki
     if(priority < q->lastprio){
         int n = priority / q->width;
-        q->buckettop = (n+1)*q->width /*+ 0.5*q->width*/;
+        q->buckettop = (n+1)*q->width + 0.5*q->width;
+        q->lastbucket = n % q->nbuckets;
+        q->lastprio = priority;
     }
-
+    */
     // cap nhat qsize : so event cua hang doi
     q->qsize++;
 
@@ -117,7 +120,7 @@ node* removeFirst(CalendarQueue* q){
     q->buckets[minbucket] = foo->next;
 
     int n = q->lastprio / q->width;
-    q->buckettop = (n+1) * q->width /*+ 0.5*q->width*/;
+    q->buckettop = (n+1) * q->width + 0.5*q->width;
     q->qsize--;
 
     return foo;
