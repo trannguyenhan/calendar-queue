@@ -51,11 +51,15 @@ void insert(node* entry){
         current->next = entry;
     }
 
+    /* Truong hop chen vao su kien bat ki
     if(priority < lastprio){
         int n = priority / width;
         buckettop = (n+1)*width + 0.5*width;
+        lastbucket = n % nbuckets;
+        lastprio = priority;
     }
-
+    */
+    
     // cap nhat qsize : so event cua hang doi
     qsize++;
 
@@ -289,9 +293,9 @@ void printBuckets(){
     printf("top : %.1d",top_threshold);
 }
 
-/*
+
 int main(){
-    initqueue();
+    initqueue();/*
     long count = 0;
     double currentTime = 0;
     double endTime = 1000*1000;
@@ -331,17 +335,17 @@ int main(){
 
     printf("count = %ld\n", count);
     printf("================================\n");
-
-    //enqueue(new_node(A,0,0,16));
-    //enqueue(new_node(A,0,0,16.2));
-    //enqueue(new_node(A,0,0,17));
+*/
+    enqueue(new_node(A,0,0,16));
+    enqueue(new_node(A,0,0,16.2));
+    enqueue(new_node(A,0,0,17));
+    printf("%.1f \n",dequeue()->endTime);
+    enqueue(new_node(A,0,0,16.7));
     //printf("%.1f \n",dequeue()->endTime);
-    //enqueue(new_node(A,0,0,13.7));
-    //printf("%.1f \n",dequeue()->endTime);
-    //enqueue(new_node(A,0,0,14.5));
-    //enqueue(new_node(A,0,0,14.7));
-    //enqueue(new_node(A,0,0,14.8));
-    //enqueue(new_node(A,0,0,15.7));
+    enqueue(new_node(A,0,0,14.5));
+    enqueue(new_node(A,0,0,21.7));
+    enqueue(new_node(A,0,0,18.8));
+    enqueue(new_node(A,0,0,13.7));
     //enqueue(new_node(A,0,0,13.7));
     //enqueue(new_node(A,0,0,16.7));
     //enqueue(new_node(A,0,0,10.7));
@@ -350,12 +354,12 @@ int main(){
     //enqueue(new_node(A,0,0,13.7));
     //resize(nbuckets*2);
     //printf("%.1f \n",newwidth());
+    printf("%.1f \n",dequeue()->endTime);
     //printf("%.1f \n",dequeue()->endTime);
     //printf("%.1f \n",dequeue()->endTime);
     //printf("%.1f \n",dequeue()->endTime);
     //printf("%.1f \n",dequeue()->endTime);
     //printf("%.1f \n",dequeue()->endTime);
-    //printf("%.1f \n",dequeue()->endTime);
-    //printBuckets();
+    printBuckets();
 }
-*/
+
