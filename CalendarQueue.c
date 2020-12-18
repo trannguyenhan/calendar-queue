@@ -51,10 +51,14 @@ void insert(node* entry){
         current->next = entry;
     }
 
+    /* Truong hop chen vao su kien bat ki
     if(priority < lastprio){
         int n = priority / width;
         buckettop = (n+1)*width + 0.5*width;
+        lastbucket = n % nbuckets;
+        lastprio = priority;
     }
+    */
 
     // cap nhat qsize : so event cua hang doi
     qsize++;
@@ -237,7 +241,7 @@ void localInit(int qbase, int nbuck, double bwidth, double startprio){
 }
 
 void initqueue(){
-    a = (node*) calloc(QSPACE,sizeof(node));
+    a = (node**) calloc(QSPACE,sizeof(node));
     localInit(0,2,1,0.0);
     resizeenable = 1;
 }
@@ -283,7 +287,8 @@ void printBuckets(){
     printf("bot : %.1d\n",bot_threshold);
     printf("top : %.1d",top_threshold);
 }
-/*
+
+
 int main(){
     initqueue();
 
@@ -313,4 +318,4 @@ int main(){
     //printf("%.1f \n",dequeue()->endTime);
     printBuckets();
 }
-*/
+
